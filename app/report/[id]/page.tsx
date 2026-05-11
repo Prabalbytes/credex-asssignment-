@@ -10,16 +10,16 @@ export const metadata: Metadata = {
   description: "View this AI subscription audit report.",
   openGraph: {
     title: "AI Spend Audit Report",
-    description:
-      "See how much this team could save on their AI tool subscriptions.",
+    description: "See how much this team could save on their AI tool subscriptions.",
     type: "article",
   },
 };
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default function ReportPage({ params }: PageProps) {
-  return <SharedReportView reportId={params.id} />;
+export default async function ReportPage({ params }: PageProps) {
+  const { id } = await params;
+  return <SharedReportView reportId={id} />;
 }
