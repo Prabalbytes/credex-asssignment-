@@ -62,15 +62,14 @@ export function SharedReportView({ reportId }: SharedReportViewProps) {
   fetchAudit();
 }, [reportId]);
 
-  if (notFound || (!result && typeof window !== "undefined")) {
+  if (notFound ) {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="text-center max-w-sm">
           <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
           <h1 className="font-display text-2xl font-bold mb-2">Report not found</h1>
           <p className="text-muted-foreground text-sm mb-6">
-            Shared reports only persist in the same browser for this MVP. Run
-            your own audit to see results.
+            This report could not be found. It may have expired or the link may be incorrect.
           </p>
           <Button asChild>
             <Link href="/audit">
