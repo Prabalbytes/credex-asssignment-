@@ -1,3 +1,11 @@
+# DEVLOG — AI Spend Audit
+
+> **Note on timeline:** Mid-semester examinations ran May 7–9.
+> This assignment was started immediately after completion on May 10.
+> All 4 working days are documented honestly below.
+
+---
+
 ## Day 1 — 2026-05-10
 
 **Hours worked:** 5
