@@ -1,6 +1,6 @@
 "use client";
+import { LeadCaptureForm } from "@/features/results/LeadCaptureForm";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -14,15 +14,35 @@ import type { AuditResult } from "@/types/results";
 import { Loader2, RefreshCcw, AlertCircle } from "lucide-react";
 
 export default function ResultsPage() {
-  const router = useRouter();
+  
   const [result, setResult] = useState<AuditResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [aiSummary, setAiSummary] = useState<string>("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
   useEffect(() => {
-    const saved = resultStorage.load();
-    setResult(saved);
-    setLoading(false);
-  }, []);
+  const saved = resultStorage.load();
+  setResult(saved);
+  setLoading(false);
+
+  if (saved) {
+    setSummaryLoading(true);
+    fetch("/api/generate-summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        companyName: saved.companyName,
+        teamSize: saved.teamSize,
+        recommendations: saved.recommendations,
+        summary: saved.summary,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setAiSummary(data.summary || ""))
+      .catch(() => setAiSummary(""))
+      .finally(() => setSummaryLoading(false));
+  }
+}, []);
 
   if (loading) {
     return (
@@ -107,21 +127,33 @@ export default function ResultsPage() {
             <div className="space-y-6">
               <SavingsBreakdown recommendations={result.recommendations} />
 
-              {/* AI summary placeholder */}
+               <LeadCaptureForm
+                 auditId={result.id}
+                 monthlySavings={result.summary.totalMonthlySavings}
+                />
+
+              {/* AI summary */}
               <div className="rounded-xl border border-border/50 p-5 gradient-card">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-2">
-                  AI Analysis
-                </p>
-                <div className="space-y-2">
-                  <div className="h-2.5 rounded bg-secondary w-full" />
-                  <div className="h-2.5 rounded bg-secondary w-4/5" />
-                  <div className="h-2.5 rounded bg-secondary w-5/6" />
-                  <div className="h-2.5 rounded bg-secondary w-3/4" />
-                </div>
-                <p className="text-xs text-muted-foreground/60 mt-3">
-                  ✦ AI narrative coming in v1.1
-                </p>
-              </div>
+                 AI Analysis
+                 </p>
+                 {summaryLoading ? (
+                   <div className="space-y-2">
+                   <div className="h-2.5 rounded bg-secondary w-full animate-pulse" />
+                   <div className="h-2.5 rounded bg-secondary w-4/5 animate-pulse" />
+                   <div className="h-2.5 rounded bg-secondary w-5/6 animate-pulse" />
+                   <div className="h-2.5 rounded bg-secondary w-3/4 animate-pulse" />
+                   </div>
+                  ) : aiSummary ? (
+                   <p className="text-sm text-muted-foreground leading-relaxed">
+                   {aiSummary}
+                   </p>
+                  ) : (
+                       <p className="text-xs text-muted-foreground/60">
+                       Summary unavailable — check your API key.
+                       </p>
+                      )}
+                </div> 
 
               {/* Next steps */}
               <div className="rounded-xl border border-primary/20 bg-primary/5 p-5">

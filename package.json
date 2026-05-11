@@ -11,6 +11,7 @@
     "test:watch": "jest"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.2",
     "@hookform/resolvers": "^3.6.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-dialog": "^1.1.0",
@@ -28,6 +29,7 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.52.0",
+    "resend": "^6.12.3",
     "tailwind-merge": "^2.3.0",
     "zod": "^3.23.0"
   },
