@@ -2,7 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Zap, ArrowRight, AlertCircle } from "lucide-react";
+import { Zap, ArrowRight, AlertCircle, Loader2 } from "lucide-react";
 import { resultStorage } from "@/lib/storage";
 import { RecommendationCard } from "@/features/results/RecommendationCard";
 import { StatCard } from "@/components/shared/StatCard";
@@ -17,59 +17,83 @@ interface SharedReportViewProps {
 export function SharedReportView({ reportId }: SharedReportViewProps) {
   const [result, setResult] = useState<AuditResult | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  async function fetchAudit() {
-    // First try Supabase
-    const { data, error } = await supabase
-      .from("audits")
-      .select("*")
-      .eq("id", reportId)
-      .single();
+    async function fetchAudit() {
+      try {
+        // First try Supabase
+        const { data, error } = await supabase
+          .from("audits")
+          .select("*")
+          .eq("id", reportId)
+          .single();
 
-    if (data && !error) {
-      // Map Supabase row back to AuditResult shape
-      const result: AuditResult = {
-        id: data.id,
-        companyName: data.company_name,
-        teamSize: data.team_size,
-        generatedAt: data.created_at,
-        recommendations: data.recommendations,
-        summary: {
-          totalCurrentMonthlySpend: data.total_monthly_spend,
-          totalRecommendedMonthlySpend: data.total_monthly_spend - data.total_monthly_savings,
-          totalMonthlySavings: data.total_monthly_savings,
-          totalAnnualSavings: data.total_annual_savings,
-          savingsPercentage: data.savings_percentage,
-          overspendingCount: data.overspending_count,
-          optimizableCount: data.optimizable_count,
-          goodValueCount: data.good_value_count,
-        },
-      };
-      setResult(result);
-      return;
+        console.log("Supabase result:", { data, error });
+
+        if (data && !error) {
+          const mapped: AuditResult = {
+            id: data.id,
+            companyName: data.company_name,
+            teamSize: data.team_size,
+            generatedAt: data.created_at,
+            recommendations: data.recommendations,
+            summary: {
+              totalCurrentMonthlySpend: data.total_monthly_spend,
+              totalRecommendedMonthlySpend:
+                data.total_monthly_spend - data.total_monthly_savings,
+              totalMonthlySavings: data.total_monthly_savings,
+              totalAnnualSavings: data.total_annual_savings,
+              savingsPercentage: data.savings_percentage,
+              overspendingCount: data.overspending_count,
+              optimizableCount: data.optimizable_count,
+              goodValueCount: data.good_value_count,
+            },
+          };
+          setResult(mapped);
+          setLoading(false);
+          return;
+        }
+
+        // Fallback to localStorage
+        const saved = resultStorage.load();
+        if (saved && saved.id === reportId) {
+          setResult(saved);
+        } else {
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    // Fallback to localStorage
-    const saved = resultStorage.load();
-    if (saved && saved.id === reportId) {
-      setResult(saved);
-    } else {
-      setNotFound(true);
-    }
+    fetchAudit();
+  }, [reportId]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
-  fetchAudit();
-}, [reportId]);
-
-  if (notFound ) {
+  // Not found state
+  if (notFound) {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="text-center max-w-sm">
           <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
-          <h1 className="font-display text-2xl font-bold mb-2">Report not found</h1>
+          <h1 className="font-display text-2xl font-bold mb-2">
+            Report not found
+          </h1>
           <p className="text-muted-foreground text-sm mb-6">
-            This report could not be found. It may have expired or the link may be incorrect.
+            This report could not be found. It may have expired or the link may
+            be incorrect.
           </p>
           <Button asChild>
             <Link href="/audit">
@@ -93,14 +117,18 @@ export function SharedReportView({ reportId }: SharedReportViewProps) {
         <div className="container flex h-14 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-              <Zap className="h-3.5 w-3.5 text-primary-foreground" strokeWidth={2.5} />
+              <Zap
+                className="h-3.5 w-3.5 text-primary-foreground"
+                strokeWidth={2.5}
+              />
             </div>
             <span className="font-display font-700 text-sm">
               AI Spend<span className="text-primary">Audit</span>
             </span>
           </Link>
           <span className="text-xs font-mono text-muted-foreground">
-            Shared report · {new Date(result.generatedAt).toLocaleDateString()}
+            Shared report ·{" "}
+            {new Date(result.generatedAt).toLocaleDateString()}
           </span>
         </div>
       </header>
@@ -108,12 +136,15 @@ export function SharedReportView({ reportId }: SharedReportViewProps) {
       <main className="container max-w-3xl py-12">
         {/* Report title */}
         <div className="mb-10">
-          <p className="text-sm text-muted-foreground mb-1">AI Spend Audit Report</p>
+          <p className="text-sm text-muted-foreground mb-1">
+            AI Spend Audit Report
+          </p>
           <h1 className="font-display text-3xl font-bold md:text-4xl">
             {result.companyName || "Your Team"} · Savings Analysis
           </h1>
           <p className="text-muted-foreground mt-2">
-            Team size: {result.teamSize} · {result.recommendations.length} tools audited
+            Team size: {result.teamSize} ·{" "}
+            {result.recommendations.length} tools audited
           </p>
         </div>
 
@@ -121,7 +152,9 @@ export function SharedReportView({ reportId }: SharedReportViewProps) {
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4 mb-10">
           <StatCard
             label="Annual savings"
-            value={formatCurrency(summary.totalAnnualSavings, { compact: true })}
+            value={formatCurrency(summary.totalAnnualSavings, {
+              compact: true,
+            })}
             highlight
           />
           <StatCard
@@ -163,7 +196,8 @@ export function SharedReportView({ reportId }: SharedReportViewProps) {
         </div>
 
         <p className="mt-8 text-xs text-muted-foreground/50 text-center">
-          Pricing data may not reflect real-time changes. Verify with vendors before making decisions.
+          Pricing data may not reflect real-time changes. Verify with vendors
+          before making decisions.
         </p>
       </main>
     </div>
