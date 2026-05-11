@@ -1,4 +1,5 @@
 "use client";
+import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Plus, ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -24,13 +25,34 @@ export function AuditForm() {
   } = form;
 
   async function onSubmit(values: AuditFormValues) {
-    setIsSubmitting(true);
-    // Simulate brief processing — engine is synchronous but feels more real
-    await new Promise((r) => setTimeout(r, 600));
-    const result = runAudit(values as AuditFormData);
-    resultStorage.save(result);
-    router.push("/results");
+  setIsSubmitting(true);
+  await new Promise((r) => setTimeout(r, 600));
+  const result = runAudit(values as AuditFormData);
+
+  // Save to Supabase
+  const { error } = await supabase.from("audits").insert({
+    id: result.id,
+    company_name: result.companyName,
+    team_size: result.teamSize,
+    tools: values.tools,
+    recommendations: result.recommendations,
+    total_monthly_spend: result.summary.totalCurrentMonthlySpend,
+    total_monthly_savings: result.summary.totalMonthlySavings,
+    total_annual_savings: result.summary.totalAnnualSavings,
+    savings_percentage: result.summary.savingsPercentage,
+    overspending_count: result.summary.overspendingCount,
+    optimizable_count: result.summary.optimizableCount,
+    good_value_count: result.summary.goodValueCount,
+  });
+
+  if (error) {
+    console.error("Supabase insert error:", error);
   }
+
+  // Save locally as backup
+  resultStorage.save(result);
+  router.push("/results");
+}
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>

@@ -1,4 +1,5 @@
 "use client";
+import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Zap, ArrowRight, AlertCircle } from "lucide-react";
@@ -18,15 +19,48 @@ export function SharedReportView({ reportId }: SharedReportViewProps) {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    // In an MVP, the shared link only works on the same browser.
-    // A real backend would look up by reportId.
+  async function fetchAudit() {
+    // First try Supabase
+    const { data, error } = await supabase
+      .from("audits")
+      .select("*")
+      .eq("id", reportId)
+      .single();
+
+    if (data && !error) {
+      // Map Supabase row back to AuditResult shape
+      const result: AuditResult = {
+        id: data.id,
+        companyName: data.company_name,
+        teamSize: data.team_size,
+        generatedAt: data.created_at,
+        recommendations: data.recommendations,
+        summary: {
+          totalCurrentMonthlySpend: data.total_monthly_spend,
+          totalRecommendedMonthlySpend: data.total_monthly_spend - data.total_monthly_savings,
+          totalMonthlySavings: data.total_monthly_savings,
+          totalAnnualSavings: data.total_annual_savings,
+          savingsPercentage: data.savings_percentage,
+          overspendingCount: data.overspending_count,
+          optimizableCount: data.optimizable_count,
+          goodValueCount: data.good_value_count,
+        },
+      };
+      setResult(result);
+      return;
+    }
+
+    // Fallback to localStorage
     const saved = resultStorage.load();
     if (saved && saved.id === reportId) {
       setResult(saved);
     } else {
       setNotFound(true);
     }
-  }, [reportId]);
+  }
+
+  fetchAudit();
+}, [reportId]);
 
   if (notFound || (!result && typeof window !== "undefined")) {
     return (
