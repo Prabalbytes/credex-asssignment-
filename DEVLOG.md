@@ -67,3 +67,52 @@
 - Write PRICING_DATA.md with cited vendor URLs
 - Write ARCHITECTURE.md with Mermaid diagram
 - Start REFLECTION.md
+
+# Day 3 — 2026-05-12
+
+**Hours worked:** 9
+
+## What I did
+
+- Started outreach for real user interviews with AI tool users
+- Created GitHub Actions CI pipeline using `.github/workflows/ci.yml`
+- Added automated test execution on every push and pull request
+- Fixed multiple CI failures related to:
+  - Node.js version mismatch
+  - Working directory configuration
+  - Cache configuration
+  - Next.js lint setup
+- Installed and configured ESLint with `eslint-config-next`
+- Fixed failing Jest recommendation test caused by updated audit logic
+- Verified all 15 tests passing successfully across 3 test suites
+- Wrote `TESTS.md` documenting test coverage and execution instructions
+- Verified vendor pricing manually from official pricing pages
+- Created `PRICING_DATA.md` with cited vendor URLs and verification dates
+- Wrote `ARCHITECTURE.md` with:
+  - Mermaid system diagram
+  - Data flow explanation
+  - Stack justification
+  - Scaling considerations
+- Wrote `PROMPTS.md` documenting prompt engineering decisions and fallback handling
+- Started drafting `REFLECTION.md` with real debugging experiences and architecture tradeoffs
+
+## What I learned
+
+- CI pipelines often fail because of environment assumptions rather than application logic
+- Next.js tooling behaves differently inside GitHub Actions compared to local development
+- Small deterministic functions are significantly easier to test than UI-heavy logic
+- AI pricing data changes extremely quickly and requires continuous verification
+- Prompt engineering improves when prompts are shorter, constrained, and role-specific
+
+## Blockers / Issues
+
+- CI debugging took much longer than expected because multiple unrelated configuration issues appeared sequentially
+- Some markdown files initially sounded too generic and AI-generated, requiring rewrites to make them feel authentic
+- Still need to complete real user interviews and remaining entrepreneurial documentation files
+
+## Plan for tomorrow
+
+- Complete USER_INTERVIEWS.md with real conversations
+- Finish GTM.md, ECONOMICS.md, LANDING_COPY.md, and METRICS.md
+- Improve mobile responsiveness and Lighthouse scores
+- Finalize README with screenshots and deployment details
