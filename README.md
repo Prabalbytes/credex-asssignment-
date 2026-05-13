@@ -162,3 +162,26 @@ Deploy to Vercel with zero configuration — the project is a standard Next.js a
 ## License
 
 MIT — free to use, modify, and deploy.
+
+## Screenshots
+
+### Landing Page
+![Landing Page](public/screenshots/landing.png)
+
+### Audit Form
+![Audit Form](public/screenshots/audit-form.png)
+
+### Results Page
+![Results Page](public/screenshots/results.png)
+
+### Shareable Report
+![Shareable Report 1](public/screenshots/report1.png)
+![Shareable Report 2](public/screenshots/report2.png)
+
+---
+
+## Live URL
+
+**Production:** https://credex-asssignment.vercel.app
+
+**Example shared report:** https://credex-asssignment.vercel.app/report/mrgm7yzk

@@ -116,3 +116,31 @@
 - Finish GTM.md, ECONOMICS.md, LANDING_COPY.md, and METRICS.md
 - Improve mobile responsiveness and Lighthouse scores
 - Finalize README with screenshots and deployment details
+
+## Day 3 — 2026-05-12
+
+**Hours worked:** 8
+
+**What I did:**
+- Created TESTS.md, PRICING_DATA.md, ARCHITECTURE.md, PROMPTS.md
+- Created GTM.md, ECONOMICS.md, LANDING_COPY.md, METRICS.md
+- Fixed GitHub Actions CI — now green with 15 passing tests
+- Verified all vendor pricing against official pages
+- Started user interviews — 1 complete, 2 in progress
+
+**What I learned:**
+- Next.js 14 requires params to be awaited in dynamic routes
+- Pricing changes fast — Cursor, ChatGPT, Gemini all had plan changes
+  since the original data was written
+- Writing GTM and ECONOMICS forces you to think about whether the
+  product actually makes business sense, not just whether it works
+
+**Blockers / what I'm stuck on:**
+- User interviews still in progress — need 2 more completed
+- README needs screenshots before final submission
+
+**Remaining tasks before submission:**
+- Complete USER_INTERVIEWS.md
+- Add screenshots to README
+- Final check of live URL
+- Submit Google Form
