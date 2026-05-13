@@ -143,13 +143,18 @@
 
 ## Blockers / Issues
 
-- README still needs screenshots and final cleanup before submission
 - Mobile responsiveness could still be improved further on smaller devices
 - Some assumptions in the economics model are still directional rather than validated with real usage data
 
 ## Remaining tasks before submission
 
-- Add screenshots to README
 - Final end-to-end check of live deployment
 - Verify environment variables and API routes one last time
 - Submit final project through Google Form
+
+### Final completion update
+
+- Performed final end-to-end testing on live deployment
+- Verified environment variables and API routes on Vercel
+- Confirmed GitHub Actions CI passing on latest commit
+- Submitted final assignment through Google Form
